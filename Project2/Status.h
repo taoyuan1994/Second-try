@@ -17,7 +17,7 @@ private:
 
 	int n_s_flag, n_q_flag;
 	int n_c_flag, n_l_flag;
-
+	
 public:
 
 	Status() :
@@ -42,7 +42,7 @@ public:
 		++n_l_flag;
 	}
 	void Meet_o(const extern char *optarg) {
-		if (strcmp(optarg, "W") != 0 || strcmp(optarg, "M") != 0) {
+		if (strcmp(optarg, "W") != 0 && strcmp(optarg, "M") != 0) {
 			cerr << "The ­­--output/-­o flag is followed by an invalid character/n";
 			exit(1);
 		}
@@ -90,6 +90,16 @@ public:
 			ifLengthModeOn = true;
 	}
 
+	void CheckIfWordsEntered() {
+		if (beginWord.empty()) {// || endOWord.empty()) {
+			cerr << "Start word is not specified\n";
+			exit(1);
+		}
+		if (endOWord.empty()) {
+			cerr << "End word is not specified\n";
+			exit(1);
+		}
+	}
 	// see if the input is impossible to accomplish
 	void CheckImpossibleCase() {
 		if (n_c_flag == 1 &&
@@ -104,6 +114,7 @@ public:
 	void SetUp() {
 		SetStackOrQueue();
 		SetChangeAndLength();
+		CheckIfWordsEntered();
 		CheckImpossibleCase();
 	}
 
@@ -129,6 +140,7 @@ public:
 	const string & endWord() {
 		return endOWord;
 	}
+
 
 	~Status() {}
 };
