@@ -67,10 +67,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="getopt.c" />
-    <ClCompile Include="GetOptExample.cpp" />
+    <ClCompile Include="commandline.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header.h" />
+    <ClInclude Include="Status.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
