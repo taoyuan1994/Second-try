@@ -43,7 +43,7 @@ public:
 	}
 	void Meet_o(const extern char *optarg) {
 		if (strcmp(optarg, "W") != 0 && strcmp(optarg, "M") != 0) {
-			cerr << "The ­­--output/-­o flag is followed by an invalid character/n";
+			cerr << "The --output/-o flag is followed by an invalid character\n";
 			exit(1);
 		}
 		else if (strcmp(optarg, "W") == 0)
@@ -119,16 +119,16 @@ public:
 	}
 
 	// return the mode status
-	const bool ifStackMode() {
+	bool ifStackMode() const {
 		return ifStackModeOn;
 	}
-	const bool ifChangeMode() {
+	bool ifChangeMode() const {
 		return ifChangeModeOn;
 	}
-	const bool ifLengthMode() {
+	bool ifLengthMode() const {
 		return ifLengthModeOn;
 	}
-	const bool ifWordMode() {
+	bool ifWordMode() const {
 		return ifWordModeOn;
 	}
 
@@ -140,7 +140,6 @@ public:
 	const string & endWord() {
 		return endOWord;
 	}
-
 
 	~Status() {}
 };
