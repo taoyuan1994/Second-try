@@ -1,11 +1,18 @@
 ﻿#include <iostream>
 #include <getopt.h>
-#include <cstring>
-#include <stdio.h>
 #include <string>
-using namespace std; 
+#include <cstring>
+#include <cassert>
 
+#ifdef DEBUG
+#define _(args) args
+#else
+#define _(args)
+#endif
+
+using namespace std; 
 #pragma once
+
 class Status {
 private:
 	bool ifStackModeOn;
@@ -17,16 +24,6 @@ private:
 
 	int n_s_flag, n_q_flag;
 	int n_c_flag, n_l_flag;
-	
-public:
-
-	Status() :
-		ifStackModeOn(true),
-		ifChangeModeOn(false), ifLengthModeOn(false),
-		ifWordModeOn(true),
-		beginWord(""), endOWord(""),
-		n_s_flag(0), n_q_flag(0),
-		n_c_flag(0), n_l_flag(0) {}
 
 	// count the times that each flag appears
 	void Meet_s() {
@@ -41,7 +38,7 @@ public:
 	void Meet_l() {
 		++n_l_flag;
 	}
-	void Meet_o(const extern char *optarg) {
+	void Meet_o(const char *optarg) {
 		if (strcmp(optarg, "W") != 0 && strcmp(optarg, "M") != 0) {
 			cerr << "The --output/-o flag is followed by an invalid character\n";
 			exit(1);
@@ -52,10 +49,10 @@ public:
 			ifWordModeOn = false;
 		else;
 	}
-	void Meet_b(const extern char *optarg) {
+	void Meet_b(const char *optarg) {
 		beginWord = optarg;
 	}
-	void Meet_e(const extern char* optarg) {
+	void Meet_e(const char* optarg) {
 		endOWord = optarg;
 	}
 	void Meet_h() {
@@ -116,6 +113,73 @@ public:
 		SetChangeAndLength();
 		CheckIfWordsEntered();
 		CheckImpossibleCase();
+	}
+
+	void SetUpStatus(int argc, char **argv) {
+		struct option longOpts[] = {
+				{ "stack", no_argument, NULL, 's' },
+				{ "queue", no_argument, NULL, 'q' },
+				{ "change", no_argument, NULL, 'c' },
+				{ "length", no_argument, NULL, 'l' },
+				{ "output", required_argument, NULL, 'o' },
+				{ "begin", required_argument, NULL, 'b' },
+				{ "end", required_argument, NULL, 'e' },
+				{ "help", no_argument, NULL, 'h' },
+		};
+
+		// Turn getopt error message on (true) or off (false)
+		// opterr is declared in getopt.h, is on by default
+		opterr = true;
+		char *remember = nullptr;
+		int opt = 0, index = 0;
+
+		// "sqclo:b:e:h" repeats the allowed flags
+		// The : after 0 dontes the required argument for option o
+		while ((opt = getopt_long(argc, argv, "sqclo:b:e:h", longOpts, &index)) != -1) {
+			switch (opt) {
+			case 's':
+				Meet_s();
+				break;
+			case 'q':
+				Meet_q();
+				break;
+			case 'c':
+				Meet_c();
+				break;
+			case 'l':
+				Meet_l();
+				break;
+			case 'o':
+				Meet_o(optarg);
+				break;
+			case 'b':
+				Meet_b(optarg);
+				break;
+			case 'e':
+				Meet_e(optarg);
+				break;
+			case 'h':
+				Meet_h();
+				break;
+			default:
+				break;
+			}
+		}
+		// do the final set up for the status to determine the modes and start/end word
+		SetUp();
+		_(cout << "Successfully implemented SetUpStatus\n";)
+	}
+
+public:
+
+	Status(int argc_in, char** argv_in) :
+		ifStackModeOn(true),
+		ifChangeModeOn(false), ifLengthModeOn(false),
+		ifWordModeOn(true),
+		beginWord(""), endOWord(""),
+		n_s_flag(0), n_q_flag(0),
+		n_c_flag(0), n_l_flag(0) {
+		SetUpStatus(argc_in, argv_in);
 	}
 
 	// return the mode status
