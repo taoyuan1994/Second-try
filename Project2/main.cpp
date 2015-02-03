@@ -2,6 +2,7 @@
 #include <getopt.h>
 #include <vector>
 #include <string>
+#include <deque>
 #include "Status.h"
 #include "Dictionary.h"
 
@@ -81,6 +82,9 @@ using namespace std;
 			 status.endWord() == "end2");)*/
 //}*/
 
+//void dfs(Dictionary::lemma start, Dictionary::lemma end, deque<deque<Dictionary::lemma>*> & output, Status & status);
+void bfs(Dictionary::lemma start, Dictionary::lemma end, deque<deque<Dictionary::lemma>*> & output, Dictionary & dic);
+void printOutput1(const deque<deque<Dictionary::lemma>*> & output);
 // This program takes in two arguments:
 // argc: the number of things on the command line
 // argv: an array of C-strings that are on the command line
@@ -101,7 +105,46 @@ int main(int argc, char **argv) {
 	unsigned int length = 0;
 	cin >> length;
 	cin.ignore();
-	Dictionary dic(length);
+	Dictionary dic(status, length);
 	_(cout << "Got dic!\n";)
+
+	deque<deque<Dictionary::lemma>*> output;
+	bfs(dic.beginWord, dic.endWord, output, dic);
+	printOutput1(output);
 	return 0;
+}
+
+//void bfs(const Dictionary::lemma start,const Dictionary::lemma end, deque<Dictionary::lemma> & output, Status & status) {
+void bfs(Dictionary::lemma start, Dictionary::lemma end, deque<deque<Dictionary::lemma>*> & output, Dictionary & dic) {
+	start.setVisited(true);
+	assert(output.empty());
+	auto startTemp = new deque < Dictionary::lemma > ;
+	startTemp->push_back(start);
+	output.push_back(startTemp);
+	startTemp = nullptr;
+	while (!output.empty()) {
+		if (output.back()->empty()) {
+			output.pop_back();
+			if (!output.empty())
+				output.back()->pop_front();
+			else
+				break;
+		}
+		auto suc = output.back()->front().getUnvisitedSuccessors(dic);
+		if (suc->empty())
+			output.back()->pop_front();
+		else
+			output.push_back(suc);
+		suc = nullptr;
+		if (output.back()->front() == end)
+			break;
+	}
+}
+
+void printOutput1(deque<deque<Dictionary::lemma>*> &output) {
+	while (!output.empty()) {
+		cout << output.front()->front().getContent() << "\n";
+		delete output.front(); output.front() = nullptr;
+		output.pop_front();
+	}
 }
